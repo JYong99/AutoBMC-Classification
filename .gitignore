@@ -1,6 +1,6 @@
 Dataset/Test
-Dataset/Reject/Others
-Dataset/Reject/Too Little
+Dataset/Reject/Others/*/*
+Dataset/Reject/Too Little/*/*
 wandb/
 
-!Dataset/Reject/Error/MYB_05527.jpg
+For_Training/Training_Dataset/*/*

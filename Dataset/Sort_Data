@@ -1,0 +1,3 @@
+
+target_directory="/home/dxd_jy/joel/Capstone/Dataset/Testing_Dataset/PMO"
+for dir in */; do     mv "$dir"* "$target_directory" && rm -r "$dir"; done
