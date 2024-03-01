@@ -1,5 +1,6 @@
 Dataset/Test
-Dataset/Reject/**/*.jpg
+Dataset/Reject/Others
+Dataset/Reject/Too Little
 wandb/
 
 !Dataset/Reject/Error/MYB_05527.jpg
