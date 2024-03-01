@@ -1,0 +1,5 @@
+Dataset/Test
+Dataset/Reject/**/*.jpg
+wandb/
+
+!Dataset/Reject/Error/MYB_05527.jpg
