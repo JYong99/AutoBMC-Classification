@@ -5,9 +5,9 @@ from PIL import Image
 #google/vit-base-patch16-224
 model_checkpoint_test = "microsoft/beit-base-patch16-384"
 inf_image_processor = AutoImageProcessor.from_pretrained(model_checkpoint_test)
-model_test = AutoModelForImageClassification.from_pretrained("/home/dxd_jy/joel/Capstone/Training_Testing/Train/beit-base-patch16-384-10L_10E_8B_5e-05_0.3")
+model_test = AutoModelForImageClassification.from_pretrained("/home/dxd_jy/joel/Capstone/Training_Testing/Train/beit-large-patch16-384-10L_20E_8B_5e-05_0.3")
 
-image = Image.open("/home/dxd_jy/joel/Capstone/Training_Testing/Test/Test_Images/Images/NGB_09966.jpg")
+image = Image.open("/home/dxd_jy/joel/Capstone/For_Training/Training_Dataset/PMO/PMO_11993.jpg")
 
 encoding = inf_image_processor(image.convert("RGB"), return_tensors="pt")
 
