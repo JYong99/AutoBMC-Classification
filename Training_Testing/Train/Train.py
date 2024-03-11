@@ -1,4 +1,4 @@
-import torch, evaluate, numpy as np, wandb, multiprocessing, random, time
+import torch, evaluate, numpy as np, wandb, random, time
 from datasets import load_dataset
 from transformers import AutoImageProcessor, AutoModelForImageClassification, TrainingArguments, Trainer
 from torchvision.transforms import (
@@ -22,7 +22,7 @@ from torchvision.transforms import (
 
 #Parameters
 testset_size = 0.3
-epoch = 20
+epoch = 60
 batch_size = 8
 lr = 5e-5
 ds = load_dataset("imagefolder", data_dir="/home/dxd_jy/joel/Capstone/For_Training/Training_Dataset")
@@ -45,13 +45,13 @@ name = f"{len(id2label)}L_{epoch}E_{batch_size}B_{lr}_{testset_size}"
 # microsoft/swinv2-base-patch4-window8-256 (0.8987)
 # facebook/deit-base-patch16-224 (0.8969)
 # microsoft/beit-base-patch16-224 (0.9194)
+# microsoft/beit-base-patch16-224-pt22k-ft22k
 
 # google/vit-base-patch16-224
 # google/vit-base-patch16-384
 # google/vit-base-patch32-384
 
-#Weekend Test google/vit-large-patch16-384
-model_checkpoint = "microsoft/beit-large-patch16-384"
+model_checkpoint = "microsoft/beit-base-patch16-384"
 image_processor = AutoImageProcessor.from_pretrained(model_checkpoint)
 
 normalize = Normalize(mean=image_processor.image_mean, std=image_processor.image_std)
@@ -64,25 +64,25 @@ elif "shortest_edge" in image_processor.size:
     crop_size = (size, size)
     max_size = image_processor.size.get("longest_edge")
 
-def random_kernel_size():
-    return random.randint(1,5) * 2 + 1
+# def random_kernel_size():
+#     return random.randint(1,3) * 2 + 1
 
-def random_gaussian_blur():
-    if random.random() < 0.5:
-        return GaussianBlur(kernel_size=random_kernel_size(), sigma=(0.5, 3))
-    else:
-        return lambda x: x
+# def random_gaussian_blur():
+#     if random.random() < 0.5:
+#         return GaussianBlur(kernel_size=random_kernel_size(), sigma=(0.5, 3))
+#     else:
+#         return lambda x: x
 
-def random_jitter():
-    if random.random() < 0.5:
-        return ColorJitter(brightness=(0.5,2), contrast=(0.5,3), saturation=(0.1,3), hue=(-0.5,0.5))
-    else:
-        return lambda x: x
+# def random_jitter():
+#     if random.random() < 0.5:
+#         return ColorJitter(brightness=(1,2), contrast=(1,5), saturation=(0.1,3))
+#     else:
+#         return lambda x: x
 
 train_transforms = Compose(
         [
-            random_gaussian_blur(),
-            random_jitter(),
+            # random_gaussian_blur(),
+            # random_jitter(),
             #RandomAffine(degrees=90),
             RandomVerticalFlip(),
             RandomRotation(degrees=90),
