@@ -30,10 +30,10 @@ image_processor1 = AutoImageProcessor.from_pretrained(model_checkpoint1)
 model_path = "/home/dxd_jy/joel/Capstone/Model/beit-base-patch16-384-10L_10E_8B_5e-05_0.3"
 weight1 = 0.9229
 
-model_checkpoint2 = "google/vit-base-patch16-224"
+model_checkpoint2 = "google/vit-base-patch16-384"
 image_processor2 = AutoImageProcessor.from_pretrained(model_checkpoint2)
-model_path2 = "/home/dxd_jy/joel/Capstone/Model/best-vit-base-patch16-224-10L_20E_8B_5e-05_0.3"
-weight2 = 0.9654
+model_path2 = "/home/dxd_jy/joel/Capstone/Model/vit-base-patch16-384-10L_15E_8B_5e-05_0.3_WithAug"
+weight2 = 0.9183
 
 #Prepare Model 1
 normalize = Normalize(mean=image_processor1.image_mean, std=image_processor1.image_std)
