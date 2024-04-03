@@ -21,9 +21,9 @@ from torchvision.transforms import (
 # torch.manual_seed(seed)
 
 #Parameters
-testset_size = 0.3
-epoch = 60
-batch_size = 8
+testset_size = 0.2
+epoch = 20
+batch_size = 32
 lr = 5e-5
 ds = load_dataset("imagefolder", data_dir="/home/dxd_jy/joel/Capstone/For_Training/Training_Dataset")
 
@@ -73,16 +73,16 @@ elif "shortest_edge" in image_processor.size:
 #     else:
 #         return lambda x: x
 
-# def random_jitter():
-#     if random.random() < 0.5:
-#         return ColorJitter(brightness=(1,2), contrast=(1,5), saturation=(0.1,3))
-#     else:
-#         return lambda x: x
+def random_jitter():
+    if random.random() < 0.7:
+        return ColorJitter(brightness=(1,2), contrast=(0.1,5), saturation=(0.1,3))
+    else:
+        return lambda x: x
 
 train_transforms = Compose(
         [
             # random_gaussian_blur(),
-            # random_jitter(),
+            random_jitter(),
             #RandomAffine(degrees=90),
             RandomVerticalFlip(),
             RandomRotation(degrees=90),
@@ -169,15 +169,15 @@ args = TrainingArguments(
     report_to=                      "wandb"
 )
 
-seed = 1026847926404610400
+#seed = 1026847926404610400
 #seed = random.randint(1, 2**63 - 1)
 
 # split up training into training + validation and evaluation
-splits = ds["train"].train_test_split(test_size=testset_size, stratify_by_column="label", seed=seed)
+splits = ds["train"].train_test_split(test_size=testset_size, stratify_by_column="label")#, seed=seed)
 train_ds = splits['train']
 val_ds = splits['test']
 
-splits2 = val_ds.train_test_split(test_size=0.5, stratify_by_column="label", seed=seed)
+splits2 = val_ds.train_test_split(test_size=0.5, stratify_by_column="label")#, seed=seed)
 val_ds = splits2['train']
 eval_ds = splits2['test']
 
@@ -207,7 +207,7 @@ wandb.init(project="Training",
             "Total Validation Data": f"Size: {0.5*(testset_size)}, Total: {len(val_ds)}",
             "Total Evalutaion Data": f"Size: {0.5*(testset_size)}, Total: {len(eval_ds)}",
             "Pytorch GPU": torch.cuda.is_available(),
-            "Seed": seed
+            #"Seed": seed
         })
 # hours = 6 * 60
 # duration = hours * 60
