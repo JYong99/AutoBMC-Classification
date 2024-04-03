@@ -4,7 +4,7 @@ import os, torch
 
 model_checkpoint_test = "google/vit-base-patch16-224"
 inf_image_processor = AutoImageProcessor.from_pretrained(model_checkpoint_test)
-model_test = AutoModelForImageClassification.from_pretrained("/home/dxd_jy/joel/Capstone/Model/Good/best-vit-base-patch16-224-10L_20E_8B_5e-05_0.3")
+model_test = AutoModelForImageClassification.from_pretrained("/home/dxd_jy/joel/Capstone/Model/best-vit-base-patch16-224-10L_20E_8B_5e-05_0.3")
 
 def process_image(image):
     encoding = inf_image_processor(image.convert("RGB"), return_tensors="pt")
@@ -14,7 +14,7 @@ def process_image(image):
     predicted_class_idx = logits.argmax(-1).item()
     return model_test.config.id2label[predicted_class_idx]
 
-root_path = "/home/dxd_jy/joel/Capstone/Training_Testing/Test/Test_Images/Test2/EOS"
+root_path = "/home/dxd_jy/joel/Capstone/Training_Testing/Test/Test_Images"
 count = 0
 
 def get_folder_names(directory):
