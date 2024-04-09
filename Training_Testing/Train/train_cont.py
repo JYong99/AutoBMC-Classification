@@ -1,4 +1,4 @@
-import torch, evaluate, numpy as np, wandb, multiprocessing, random, time
+import torch, evaluate, numpy as np, wandb, random, time
 from datasets import load_dataset
 from transformers import AutoImageProcessor, AutoModelForImageClassification, TrainingArguments, Trainer
 from torchvision.transforms import (
@@ -17,14 +17,13 @@ from torchvision.transforms import (
     Normalize,
     ToTensor,
 )
-
 # seed = torch.random.initial_seed()
 # torch.manual_seed(seed)
 
 #Parameters
-testset_size = 0.3
-epoch = 1
-batch_size = 8
+testset_size = 0.2
+epoch = 10
+batch_size = 4
 lr = 5e-5
 ds = load_dataset("imagefolder", data_dir="/home/dxd_jy/joel/Capstone/For_Training/Training_Dataset")
 
@@ -37,19 +36,28 @@ for i, label in enumerate(labels1):
 name = f"{len(id2label)}L_{epoch}E_{batch_size}B_{lr}_{testset_size}"
 
 # To try:
-# DeiT, BEiT, ResNeXt, DenseNet
+# ResNeXt, DenseNet
 
-# nvidia/mit-b5
-# microsoft/resnet-152
-# google/efficientnet-b5
-# google/mobilenet_v2_1.0_224
-# microsoft/swinv2-base-patch4-window8-256
+# google/efficientnet-b5 (0.8737)
+# google/efficientnet-b7 (0.8131)
+# google/mobilenet_v2_1.0_224 (0.7355)
+# google/mobilenet_v2_1.4_224 (0.8855) (5epoch,8batch)
+# microsoft/swinv2-base-patch4-window8-256 (0.8987)
 # facebook/deit-base-patch16-224 (0.8969)
+# microsoft/resnet-152 (0.8991) (5epoch,8batch)
+# microsoft/beit-base-patch16-224 (0.9194)
 
-# google/vit-base-patch16-224
-# google/vit-base-patch16-384
-# google/vit-base-patch32-384
-model_checkpoint = "google/vit-large-patch16-384"
+# For Report 5epoch, batch 4
+# google/mobilenet_v2_1.4_224 (47mins)
+# microsoft/resnet-152 (1.5hrs) 
+# facebook/deit-base-patch16-384 (4.5hrs)
+# microsoft/swinv2-large-patch4-window12to24-192to384-22kto1k-ft (14hrs) 
+# google/efficientnet-b7 (14hrs)
+# nvidia/mit-b5 (14hrs)
+# google/vit-large-patch16-384 (14hrs)
+# microsoft/beit-large-patch16-512 (32hrs)
+
+model_checkpoint = "microsoft/swinv2-large-patch4-window12to24-192to384-22kto1k-ft"
 image_processor = AutoImageProcessor.from_pretrained(model_checkpoint)
 
 normalize = Normalize(mean=image_processor.image_mean, std=image_processor.image_std)
@@ -65,12 +73,24 @@ elif "shortest_edge" in image_processor.size:
 # def random_kernel_size():
 #     return random.randint(1,3) * 2 + 1
 
+# def random_gaussian_blur():
+#     if random.random() < 0.5:
+#         return GaussianBlur(kernel_size=random_kernel_size(), sigma=(0.5, 3))
+#     else:
+#         return lambda x: x
+
+# def random_jitter():
+#     if random.random() < 0.7:
+#         return ColorJitter(brightness=(1,2), contrast=(0.1,5), saturation=(0.1,3))
+#     else:
+#         return lambda x: x
+
 train_transforms = Compose(
         [
-            # GaussianBlur(kernel_size=random_kernel_size(), sigma=(0.01, 1)),
-            # ColorJitter(brightness=(0.5,2), contrast=(0.5,3), saturation=(0.1,3), hue=(-0.5,0.5))
+            # random_gaussian_blur(),
+            # random_jitter(),
             # RandomAffine(degrees=90),
-            # RandomVerticalFlip(),
+            RandomVerticalFlip(),
             # RandomRotation(degrees=90),
             RandomHorizontalFlip(),
             RandomResizedCrop(crop_size),
@@ -118,11 +138,11 @@ def compute_metrics(eval_pred):
     labels = eval_pred.label_ids
     predictions = np.argmax(eval_pred.predictions, axis=1)
 
-    accuracy_results = accuracy.compute(predictions=predictions, references=labels)
-    f1_results = f1.compute(predictions=predictions, references=labels, average="weighted")
-    precision_results = precision.compute(predictions=predictions, references=labels, average="weighted")
-    recall_results = recall.compute(predictions=predictions, references=labels, average="weighted")
-    combined_results = {**accuracy_results, **f1_results, **precision_results, **recall_results}
+    accuracy_results    = accuracy.compute(predictions=predictions, references=labels)
+    f1_results          = f1.compute(predictions=predictions, references=labels, average="weighted")
+    precision_results   = precision.compute(predictions=predictions, references=labels, average="weighted")
+    recall_results      = recall.compute(predictions=predictions, references=labels, average="weighted")
+    combined_results    = {**accuracy_results, **f1_results, **precision_results, **recall_results}
  
     wandb.log({"Train_f1": f1_results["f1"], "Train_prec": precision_results["precision"], "Train_recall": recall_results["recall"]})
     return combined_results
@@ -132,7 +152,6 @@ def collate_fn(examples):
     labels = torch.tensor([example["label"] for example in examples])
     return {"pixel_values": pixel_values, "labels": labels}
 
-# for x in range(5):
 model_name = model_checkpoint.split("/")[-1]
 run_name = f"{model_name}-{name}"
 
@@ -159,7 +178,7 @@ args = TrainingArguments(
 seed = 1026847926404610400
 #seed = random.randint(1, 2**63 - 1)
 
-# split up training into training + validation
+# split up training into training + validation and evaluation
 splits = ds["train"].train_test_split(test_size=testset_size, stratify_by_column="label", seed=seed)
 train_ds = splits['train']
 val_ds = splits['test']
@@ -181,7 +200,7 @@ trainer = Trainer(
     data_collator=collate_fn,
 )
 
-wandb.init(project="huggingface", 
+wandb.init(project="Training", 
         name=run_name,
         config={
             "Model": model_name,
@@ -194,10 +213,13 @@ wandb.init(project="huggingface",
             "Total Validation Data": f"Size: {0.5*(testset_size)}, Total: {len(val_ds)}",
             "Total Evalutaion Data": f"Size: {0.5*(testset_size)}, Total: {len(eval_ds)}",
             "Pytorch GPU": torch.cuda.is_available(),
-            "Seed": seed
+            #"Seed": seed
         })
+# hours = 6 * 60
+# duration = hours * 60
+# time.sleep(duration)
 
-train_results = trainer.train(resume_from_checkpoint="/home/dxd_jy/joel/Capstone/Training_Testing/Train/vit-large-patch16-384-10L_20E_8B_5e-05_0.3")
+train_results = trainer.train(resume_from_checkpoint="/home/dxd_jy/joel/Capstone/Model/swinv2-large-patch4-window12to24-192to384-22kto1k-ft-10L_5E_4B_5e-05_0.2/checkpoint-38540")
 trainer.save_model()
 trainer.log_metrics("train", train_results.metrics)
 trainer.save_metrics("train", train_results.metrics)

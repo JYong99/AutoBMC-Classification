@@ -36,11 +36,7 @@ for i, label in enumerate(labels1):
 name = f"{len(id2label)}L_{epoch}E_{batch_size}B_{lr}_{testset_size}"
 
 models = [
-    "google/vit-large-patch16-384",
-    "nvidia/mit-b5",
-    "google/efficientnet-b7",
-    "microsoft/swinv2-large-patch4-window12to24-192to384-22kto1k-ft",
-    "facebook/deit-base-patch16-384",
+    "google/mobilenet_v2_1.4_224",
 ]
 
 # duration = 20 * 60

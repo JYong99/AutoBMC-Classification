@@ -49,8 +49,6 @@ name = f"{len(id2label)}L_{epoch}E_{batch_size}B_{lr}_{testset_size}"
 
 # For Report 5epoch, batch 4
 # google/mobilenet_v2_1.4_224 (47mins)
-
-# Done
 # microsoft/resnet-152 (1.5hrs) 
 # facebook/deit-base-patch16-384 (4.5hrs)
 # microsoft/swinv2-large-patch4-window12to24-192to384-22kto1k-ft (14hrs) 
@@ -59,7 +57,7 @@ name = f"{len(id2label)}L_{epoch}E_{batch_size}B_{lr}_{testset_size}"
 # google/vit-large-patch16-384 (14hrs)
 # microsoft/beit-large-patch16-512 (32hrs)
 
-model_checkpoint = "microsoft/resnet-152"
+model_checkpoint = "google/mobilenet_v2_1.4_224"
 image_processor = AutoImageProcessor.from_pretrained(model_checkpoint)
 
 normalize = Normalize(mean=image_processor.image_mean, std=image_processor.image_std)
