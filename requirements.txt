@@ -2,3 +2,4 @@ transformers
 wandb
 datasets
 torchvision
+evaluate

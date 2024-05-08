@@ -3,5 +3,5 @@ Dataset/Reject/Others/*/*
 Dataset/Reject/Too Little/*/*
 wandb/
 Model
-For_Training/Training_Dataset/*/*
+For_Training/*
 Ignore
