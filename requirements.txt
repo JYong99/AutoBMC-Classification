@@ -3,3 +3,4 @@ wandb
 datasets
 torchvision
 evaluate
+accelerate

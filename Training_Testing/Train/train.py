@@ -23,9 +23,9 @@ from torchvision.transforms import (
 #Parameters
 testset_size = 0.2
 epoch = 5
-batch_size = 4
+batch_size = 8
 lr = 5e-5
-ds = load_dataset("imagefolder", data_dir="/home/dxd_jy/joel/Capstone/For_Training/Training_Dataset")
+ds = load_dataset("imagefolder", data_dir="/home/joel/AutoBMC-Classification/For_Training/Training_Dataset_All")
 
 labels1 = ds["train"].features["label"].names
 label2id, id2label = dict(), dict()
@@ -57,7 +57,7 @@ name = f"{len(id2label)}L_{epoch}E_{batch_size}B_{lr}_{testset_size}"
 # google/vit-large-patch16-384 (14hrs)
 # microsoft/beit-large-patch16-512 (32hrs)
 
-model_checkpoint = "google/mobilenet_v2_1.4_224"
+model_checkpoint = "microsoft/beit-base-patch16-384"
 image_processor = AutoImageProcessor.from_pretrained(model_checkpoint)
 
 normalize = Normalize(mean=image_processor.image_mean, std=image_processor.image_std)
@@ -200,7 +200,7 @@ trainer = Trainer(
     data_collator=collate_fn,
 )
 
-wandb.init(project="Capstone_Report", 
+wandb.init(project="Full_Dataset", 
         name=run_name,
         config={
             "Model": model_name,
