@@ -3,9 +3,9 @@ import os, torch, shutil
 from PIL import Image
 from transformers import AutoModelForImageClassification, AutoImageProcessor
 
-model_checkpoint_test = "google/vit-base-patch16-224"
+model_checkpoint_test = "microsoft/beit-base-patch16-384"
 inf_image_processor = AutoImageProcessor.from_pretrained(model_checkpoint_test)
-model_test = AutoModelForImageClassification.from_pretrained("/home/dxd_jy/joel/Capstone/Model/best-vit-base-patch16-224-10L_20E_8B_5e-05_0.3")
+model_test = AutoModelForImageClassification.from_pretrained("D:/Github/AutoBMC-Classification/Model/beit-base-patch16-384-21L_15E_8B_5e-05_0.2")
 
 # Function to make predictions
 def predict(img_path):
