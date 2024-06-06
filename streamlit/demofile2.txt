@@ -1,0 +1,7 @@
+[UploadedFile(file_id='0161649e-9384-41ed-a6c7-4d4c3983194c', name='ABE_00001.jpg', type='image/jpeg', size=35545, _file_urls=file_id: "0161649e-9384-41ed-a6c7-4d4c3983194c"
+upload_url: "/_stcore/upload_file/06907aa3-cdd6-44b5-b37e-2218dc99a0ea/0161649e-9384-41ed-a6c7-4d4c3983194c"
+delete_url: "/_stcore/upload_file/06907aa3-cdd6-44b5-b37e-2218dc99a0ea/0161649e-9384-41ed-a6c7-4d4c3983194c"
+), UploadedFile(file_id='46e2cdbf-706d-418e-bff0-415d0807afd7', name='ABE_00002.jpg', type='image/jpeg', size=37536, _file_urls=file_id: "46e2cdbf-706d-418e-bff0-415d0807afd7"
+upload_url: "/_stcore/upload_file/06907aa3-cdd6-44b5-b37e-2218dc99a0ea/46e2cdbf-706d-418e-bff0-415d0807afd7"
+delete_url: "/_stcore/upload_file/06907aa3-cdd6-44b5-b37e-2218dc99a0ea/46e2cdbf-706d-418e-bff0-415d0807afd7"
+)]

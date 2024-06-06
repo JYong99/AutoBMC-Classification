@@ -8,8 +8,8 @@ inf_image_processor = AutoImageProcessor.from_pretrained(model_checkpoint_test)
 model_test = AutoModelForImageClassification.from_pretrained("D:/Github/AutoBMC-Classification/Model/beit-base-patch16-384-21L_15E_8B_5e-05_0.2")
 
 # Function to make predictions
-def predict(img_path):
-    image = Image.open(img_path)
+def predict(img):
+    image = Image.open(img)
     encoding = inf_image_processor(image.convert("RGB"), return_tensors="pt")
     with torch.no_grad():
         outputs = model_test(**encoding)
@@ -28,24 +28,27 @@ def main():
     if 'all_pred' in st.session_state:
         all_pred = st.session_state.all_pred
 
+    # Text input
+    # folder_path = st.sidebar.text_input('Enter path to folder:', " ")
+
     # Allow user to select a folder containing images
-    folder_path = st.sidebar.text_input('Enter path to folder:', "/home/dxd_jy/joel/Capstone/Training_Testing/Test/Test_Images/Images")
-    #folder_path = st.file_uploader("Select Folder", type="directory", accept_multiple_files=False)
+    uploaded_file = st.sidebar.file_uploader("Select Images", type=([".jpg", ".png"]), accept_multiple_files=True)
 
     if st.sidebar.button('Predict'):
         if st.session_state.button_pressed == True:
             all_pred = {}
-        image_files = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith(('jpg', 'png'))]
-        for img_path in image_files:
-            prediction = predict(img_path)
+        #image_files = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith(('jpg', 'png'))]
+
+        for img in uploaded_file:
+            prediction = predict(img)
             if prediction in all_pred:
-                all_pred[prediction]["img_paths"].append(img_path)
+                all_pred[prediction]["img_paths"].append(img)
                 all_pred[prediction]["count"] = all_pred[prediction]["count"] + 1
             else:
-                all_pred.update({prediction: {"count": 1, "img_paths": [img_path]}})
+                all_pred.update({prediction: {"count": 1, "img_paths": [img]}})
         st.session_state.button_pressed = True
         st.session_state.all_pred = all_pred
-    
+
     if st.session_state.button_pressed == True:
         for name in all_pred:
             st.sidebar.write(name)
@@ -57,8 +60,7 @@ def main():
 
         for image in all_pred[option]["img_paths"]:
             img_data = Image.open(image)
-            file_name = os.path.basename(image)
-            st.image(img_data, caption=file_name, width= img_data.width)   
+            st.image(img_data, caption=image.name, width= img_data.width)   
             
 if __name__ == '__main__':
     main()
