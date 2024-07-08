@@ -1,3 +1,4 @@
 wandb/
 Model
 For_Training/*
+__pycache__/

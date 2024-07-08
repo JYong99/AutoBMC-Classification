@@ -1,11 +1,14 @@
 import streamlit as st
-import os, torch, shutil
+import os, torch, shutil, time
 from PIL import Image
 from transformers import AutoModelForImageClassification, AutoImageProcessor
 
+start_time_load_model = time.time()
 model_checkpoint_test = "microsoft/beit-base-patch16-384"
 inf_image_processor = AutoImageProcessor.from_pretrained(model_checkpoint_test)
-model_test = AutoModelForImageClassification.from_pretrained("D:/Github/AutoBMC-Classification/Model/beit-base-patch16-384-21L_15E_8B_5e-05_0.2")
+model_test = AutoModelForImageClassification.from_pretrained("../Model/beit-base-patch16-384-21L_15E_8B_5e-05_0.2")
+end_time_load_model = time.time()
+print(f"\nDuration to load model: {end_time_load_model-start_time_load_model} seconds")
 
 # Function to make predictions
 def predict(img):
@@ -38,6 +41,8 @@ def main():
 
     # Predict Button
     if st.sidebar.button('Predict'):
+        start_time_predict = time.time()
+        print("Predict Button Pressed")
         # If there are files uploaded
         if len(uploaded_file) != 0:
             #If Predict button has been pressed before, reset saved predictions
@@ -57,14 +62,18 @@ def main():
                     all_pred.update({prediction: {"count": 1, "img_paths": [img]}})
             st.session_state.predict_button_pressed = True
             st.session_state.all_pred = all_pred
+            end_time_predict = time.time()
+            print(f"Prediction Duration: {end_time_predict - start_time_predict} seconds")
         else:
             st.write("Please Upload Files.")
 
     # Clear Button
     if st.sidebar.button('Clear'):
+        print("Clear Button Pressed")
         st.session_state.predict_button_pressed = False
         st.session_state.all_pred = {}
-        st.session_state.uploader_key += 1 #Fix this#
+        st.session_state.uploader_key += 1 
+        st.rerun()
 
     if st.session_state.predict_button_pressed == True:
         # Display total count of each category
@@ -78,6 +87,7 @@ def main():
                 list(all_pred.keys()),
                 index = 0
             )
+        
         # Display all images under that category
         for image in all_pred[option]["img_paths"]:
             img_data = Image.open(image)
