@@ -1,5 +1,5 @@
 import streamlit as st
-import os, torch, shutil, time
+import os, torch, shutil, time, pandas as pd
 from PIL import Image
 from transformers import AutoModelForImageClassification, AutoImageProcessor
 
@@ -10,7 +10,7 @@ model_test = AutoModelForImageClassification.from_pretrained("../Model/beit-base
 end_time_load_model = time.time()
 print(f"\nDuration to load model: {end_time_load_model-start_time_load_model} seconds")
 
-# Function to make predictions
+# Function to perform predictions
 def predict(img):
     image = Image.open(img)
     encoding = inf_image_processor(image.convert("RGB"), return_tensors="pt")
@@ -19,7 +19,6 @@ def predict(img):
         logits = outputs.logits
     predicted_class_idx = logits.argmax(-1).item()
     return model_test.config.id2label[predicted_class_idx]
-
 
 def main():
     st.title('Bone Marrow Cell Classification')
@@ -37,7 +36,7 @@ def main():
     # folder_path = st.sidebar.text_input('Enter path to folder:', " ")
 
     # Allow user to select a folder containing images
-    uploaded_file = st.sidebar.file_uploader("Select Images", type=([".jpg", ".png"]), accept_multiple_files=True, key = f"uploader_{st.session_state.uploader_key}")
+    uploaded_file = st.sidebar.file_uploader("Upload Images", type=([".jpg", ".png"]), accept_multiple_files=True, key = f"uploader_{st.session_state.uploader_key}")
 
     # Predict Button
     if st.sidebar.button('Predict'):
@@ -77,9 +76,14 @@ def main():
 
     if st.session_state.predict_button_pressed == True:
         # Display total count of each category
+        table_data = []
+        total = 0
         for name in all_pred:
-            st.sidebar.write(name)
-            ## Incomplete
+            table_data.append([name, all_pred[name]["count"]])
+            total += all_pred[name]["count"]
+        table_df = pd.DataFrame(table_data, columns=['Cell Name', 'Count'])
+        st.sidebar.write(f"Total images predicted: {total}")
+        st.sidebar.table(table_df.set_index('Cell Name'))
 
         # Dropdown box to choose category
         option = st.selectbox(
