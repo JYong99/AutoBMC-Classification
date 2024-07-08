@@ -22,7 +22,8 @@ def predict(img):
     return model_test.config.id2label[predicted_class_idx]
 
 # Function for predict button
-def predict_button(uploaded_file, start_time_predict, all_pred):
+def predict_button(uploaded_file, all_pred):
+    start_time_predict = time.time()
     print("Predict Button Pressed")
     # If there are files uploaded
     if len(uploaded_file) != 0:
@@ -95,8 +96,7 @@ def main():
 
     # Predict Button
     if st.sidebar.button('Predict'):
-        start_time_predict = time.time()
-        predict_button(uploaded_file, start_time_predict, all_pred)
+        predict_button(uploaded_file, all_pred)
 
     # Clear Button
     if st.sidebar.button('Clear'):
