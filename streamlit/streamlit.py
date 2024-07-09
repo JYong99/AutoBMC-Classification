@@ -7,7 +7,7 @@ from transformers import AutoModelForImageClassification, AutoImageProcessor
 start_time_load_model = time.time()
 model_checkpoint_test = "microsoft/beit-base-patch16-384"
 inf_image_processor = AutoImageProcessor.from_pretrained(model_checkpoint_test)
-model_test = AutoModelForImageClassification.from_pretrained("../Model/beit-base-patch16-384-21L_15E_8B_5e-05_0.2")
+model_test = AutoModelForImageClassification.from_pretrained("../../Model/beit-base-patch16-384-21L_15E_8B_5e-05_0.2")
 end_time_load_model = time.time()
 print(f"\nDuration to load model: {end_time_load_model-start_time_load_model} seconds")
 
